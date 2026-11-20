@@ -6,7 +6,19 @@ A console-based Minesweeper game built with C# and .NET.
 
 The board contains hidden bombs. Your goal is to reveal every safe cell without sweeping a bomb.
 
-The current game starts with a randomly generated 3-row by 2-column board containing one bomb.
+## Difficulty Levels
+
+Choose a difficulty level when the game starts:
+
+| Level | Board size | Bombs |
+|---|---:|---:|
+| Beginner | 5 x 5 | 5 |
+| Intermediate | 9 x 9 | 12 |
+| Expert | 16 x 16 | 40 |
+
+After a game ends, you can select a difficulty level before starting again.
+
+Invalid level selections use `Beginner` mode by default.
 
 ## Running the Game
 
@@ -20,15 +32,17 @@ You can then enter commands at the prompt.
 
 ### Board
 
-Rows are labeled from `A` to `Z`. Columns are labeled `1` throug `9`, followed by `A` through `Z`.
+Rows are labeled from `A` to `Z`. Columns are labeled `1` through `9`, followed by `A` through `Z`.
 
 For example:
 
 ```bash
-    1  2
-A  ░░░ ░░░
-B  ░░░ ░░░
-C  ░░░ ░░░
+    1   2   3   4   5
+ A ░░░ ░░░ ░░░ ░░░ ░░░
+ B ░░░ ░░░ ░░░ ░░░ ░░░
+ C ░░░ ░░░ ░░░ ░░░ ░░░
+ D ░░░ ░░░ ░░░ ░░░ ░░░
+ E ░░░ ░░░ ░░░ ░░░ ░░░
 ```
 
 The board uses the following symbols:
@@ -40,6 +54,7 @@ Symbol|Meaning
 1 to 8|Number of nearby bombs
 ?|Marker
 B|Bomb revealed after game over
+X|Incorrect marker revealed after game over
 
 ### Commands
 
@@ -81,7 +96,6 @@ quit
 This exits the game.
 
 ### Rules
-- Rows and commands use uppercase or lowercase as specified by the board and command format.
 - Commands are case-sensitive: use `A1 sweep`, `A1 marker`, or `quit`.
 - Sweeping a bomb loses the game.
 - Markers cannot be placed on revealed cells.
@@ -89,7 +103,7 @@ This exits the game.
 - Sweeping a marked cell has no effect until the marker is removed.
 - The puzzle is solved when every safe cell has been revealed.
 - Bombs do not need to be marked to complete the puzzle.
-- After winning or losing, press Enter to start a new game.
+- After winning or losing, press Enter, then choose a difficulty level for the new game.
 
 ### Nearby Bomb Count
 

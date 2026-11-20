@@ -1,5 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+Level[] levels =
+[
+  new("Beginner", 5, 5, 5),
+  new("Intermediate", 9, 9, 12),
+  new("Expert", 16, 16, 40),
+];
+
+Level selectedLevel = SelectLevel();
 BoardRenderer renderer = new();
 MinesweeperGame game;
 CommandParser commandParser = new();
@@ -53,6 +61,9 @@ void WriteCellCommandMessage(CellCommandResult result)
 {
   switch (result.Status)
   {
+    case CellCommandStatus.InvalidCommand:
+      Console.WriteLine("\nInvalid command.");
+      break;
     case CellCommandStatus.Accepted:
       Console.WriteLine("\nMove accepted.");
       break;
@@ -74,14 +85,42 @@ void WriteCellCommandMessage(CellCommandResult result)
 void InitBoard()
 {
   Generator g = new();
-  game = new(g.Generate(3, 2, 1));
+  game = new(g.Generate(
+    selectedLevel.RowCount,
+    selectedLevel.ColumnCount,
+    selectedLevel.BombCount
+  ));
 }
 
 void RestartGame()
 {
-  Console.WriteLine("Press any key to play again...\n");
+  Console.WriteLine("Press Enter to choose a level...\n");
   Console.ReadLine();
 
+  selectedLevel = SelectLevel();
   InitBoard();
   renderer.Render(game.Board);
 }
+
+Level SelectLevel()
+{
+  Console.WriteLine("Select a level:");
+  Console.WriteLine("1. Beginner - 5 x 5, 5 bombs");
+  Console.WriteLine("2. Intermediate - 9 x 9, 12 bombs");
+  Console.WriteLine("3. Expert - 16 x 16, 40 bombs");
+  Console.Write("Choose 1, 2, or 3: ");
+
+  string? selection = Console.ReadLine();
+  int index = selection switch
+  {
+    "1" => 0,
+    "2" => 1,
+    "3" => 2,
+    _ => 0,
+  };
+  Level level = levels[index];
+  Console.WriteLine($"\nStarting {level.Name}: {level.RowCount} x {level.ColumnCount}, {level.BombCount} bombs");
+  return level;
+}
+
+record Level(string Name, int RowCount, int ColumnCount, int BombCount);
