@@ -1,5 +1,9 @@
 # Minesweeper
 
+[![Build, Test, and Deploy](https://github.com/arwinc/minesweeper-app/actions/workflows/deploy.yml/badge.svg)](https://github.com/arwinc/minesweeper-app/actions/workflows/deploy.yml)
+[![Play online](https://img.shields.io/badge/%E2%96%B6_Play-2ea44f?style=flat)](https://arwinc.github.io/minesweeper-app/)
+
+
 A console-based Minesweeper game built with C# and .NET.
 
 ## Overview
