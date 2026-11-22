@@ -76,6 +76,10 @@ setModuleImports('main.js', {
       inputRow.style.display = "flex";
       cmdInput.focus();
     }),
+    onExit: () => {
+      inputRow.style.display = "none";
+      document.getElementById("restart-btn").style.display = "inline-block";
+    }
   }
 });
 

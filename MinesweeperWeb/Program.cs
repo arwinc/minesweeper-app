@@ -22,10 +22,15 @@ try
   {
     await task;
   }
+  Console.WriteLine("\n[Session ended]");
 }
 catch (Exception ex)
 {
   Console.WriteLine($"\n\x1b[31m[Unhandled Error] {ex.GetType().Name}: {ex.Message}\x1b[0m");
+}
+finally
+{
+  Program.onProgramExited();
 }
 
 partial class Program
@@ -35,6 +40,9 @@ partial class Program
 
   [JSImport("dom.readLineAsync", "main.js")]
   internal static partial Task<string?> ReadLineAsync();
+
+  [JSImport("dom.onExit", "main.js")]
+  internal static partial void onProgramExited();
 }
 
 internal class DomTextWriter : TextWriter
