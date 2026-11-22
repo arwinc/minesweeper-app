@@ -1,13 +1,32 @@
+extern alias MinesweeperApp;
+
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
 
 Console.SetOut(new DomTextWriter());
-Console.WriteLine("National Geographic: \u001b[1m\u001b[34mBeyond Earth\u001b[0m");
-await Program.ReadLineAsync();
+MinesweeperApp::ConsoleReader.ReadLineHandler = () => Program.ReadLineAsync();
+
+var entryPoint = typeof(MinesweeperApp::Program).GetMethod(
+  "<Main>$",
+  BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public
+);
+
+var result = entryPoint?.Invoke(null, [Array.Empty<string>()]);
+try
+{
+  if (result is Task task)
+  {
+    await task;
+  }
+}
+catch (Exception ex)
+{
+  Console.WriteLine($"\n\x1b[31m[Unhandled Error] {ex.GetType().Name}: {ex.Message}\x1b[0m");
+}
 
 partial class Program
 {
