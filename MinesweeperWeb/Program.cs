@@ -1,55 +1,30 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices.JavaScript;
+using System.Text;
 using System.Threading.Tasks;
 
-Console.WriteLine("Hello, Browser!");
+Console.SetOut(new DomTextWriter());
+Console.WriteLine("National Geographic: \u001b[1m\u001b[34mBeyond Earth\u001b[0m");
 
-if (args.Length == 1 && args[0] == "start")
-  StopwatchSample.Start();
-
-while (true)
+partial class Program
 {
-  StopwatchSample.Render();
-  await Task.Delay(1000);
+  [JSImport("dom.appendOutput", "main.js")]
+  internal static partial void AppendOutput(string text);
 }
 
-partial class StopwatchSample
+internal class DomTextWriter : TextWriter
 {
-  private static Stopwatch stopwatch = new();
-
-  public static void Start() => stopwatch.Start();
-  public static void Render() => SetInnerText("#time", stopwatch.Elapsed.ToString(@"mm\:ss"));
-
-  [JSImport("dom.setInnerText", "main.js")]
-  internal static partial void SetInnerText(string selector, string content);
-
-  [JSExport]
-  internal static bool Toggle()
+  public override Encoding Encoding => Encoding.UTF8;
+  public override void Write(char value) => Program.AppendOutput(value.ToString());
+  public override void Write(string? value)
   {
-    if (stopwatch.IsRunning)
+    if (value is not null)
     {
-      stopwatch.Stop();
-      return false;
-    }
-    else
-    {
-      stopwatch.Start();
-      return true;
+      Program.AppendOutput(value);
     }
   }
-
-  [JSExport]
-  internal static void Reset()
-  {
-    if (stopwatch.IsRunning)
-      stopwatch.Restart();
-    else
-      stopwatch.Reset();
-
-    Render();
-  }
-
-  [JSExport]
-  internal static bool IsRunning() => stopwatch.IsRunning;
+  public override void WriteLine() => Program.AppendOutput("\n");
+  public override void WriteLine(string? value) => Program.AppendOutput((value ?? string.Empty) + "\n");
 }
