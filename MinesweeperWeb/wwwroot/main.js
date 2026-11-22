@@ -4,6 +4,7 @@
 import { dotnet } from './_framework/dotnet.js'
 
 const outElement = document.getElementById("out");
+const loadingElement = document.getElementById("loading");
 const inputRow = document.getElementById("input-row");
 const cmdInput = document.getElementById("cmd");
 
@@ -55,6 +56,7 @@ cmdInput.addEventListener("keydown", (e) => {
     const value = cmdInput.value;
     cmdInput.value = "";
     inputRow.style.display = "none";
+    loadingElement.style.display = "block";
     appendAnsiText(`> ${value}\n`);
     const resolve = pendingResolve;
     pendingResolve = null;
@@ -73,10 +75,12 @@ setModuleImports('main.js', {
     appendOutput: (text) => appendAnsiText(text),
     readLineAsync: () => new Promise((resolve) => {
       pendingResolve = resolve;
+      loadingElement.style.display = "none";
       inputRow.style.display = "flex";
       cmdInput.focus();
     }),
     onExit: () => {
+      loadingElement.style.display = "none";
       inputRow.style.display = "none";
       document.getElementById("restart-btn").style.display = "inline-block";
     }
