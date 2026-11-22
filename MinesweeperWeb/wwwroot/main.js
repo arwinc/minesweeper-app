@@ -8,6 +8,7 @@ const loadingElement = document.getElementById("loading");
 const inputRow = document.getElementById("input-row");
 const cmdInput = document.getElementById("cmd");
 
+const MAX_INPUTS = 2;
 let pendingResolve = null;
 let currentColor = "";
 let isBold = false;
@@ -19,7 +20,28 @@ const ansiColors = {
   '94': '#75beff', '95': '#c06bd3', '96': '#66d9ef', '97': '#ffffff'
 };
 
-const appendAnsiText = (text) => {
+let currentLine = null;
+
+function trimOldInputs() {
+  const inputs = outElement.querySelectorAll('div[data-input="true"]');
+  // Once there are more than MAX_INPUTS, remove everything up to the oldest kept input
+  if (inputs.length > MAX_INPUTS) {
+    const cutoffInput = inputs.item(inputs.length - MAX_INPUTS);
+    while (outElement.firstChild && outElement.firstChild !== cutoffInput) {
+      outElement.removeChild(outElement.firstChild);
+    }
+  }
+}
+
+function getCurrentLine() {
+  if (!currentLine) {
+    currentLine = document.createElement('div');
+    outElement.appendChild(currentLine);
+  }
+  return currentLine;
+}
+
+function appendAnsiText(text, isUserInput = false) {
   const parts = text.split(/(\x1b\[[0-9;]*m)/g);
 
   parts.forEach(part => {
@@ -40,13 +62,33 @@ const appendAnsiText = (text) => {
         }
       });
     } else {
-      const span = document.createElement("span");
-      span.textContent = part;
-      if (currentColor) span.style.color = currentColor;
-      if (isBold) span.style.fontWeight = "bold";
-      outElement.appendChild(span);
+      const lines = part.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].length > 0) {
+          const lineDiv = getCurrentLine();
+          if (isUserInput) {
+            lineDiv.dataset.input = "true";
+          }
+          const span = document.createElement("span");
+          span.textContent = lines[i];
+          if (currentColor) span.style.color = currentColor;
+          if (isBold) span.style.fontWeight = "bold";
+          lineDiv.appendChild(span);
+        } else if (i < lines.length - 1) {
+          const zeroWidthSpaceChar = document.createTextNode("\u200B");
+          getCurrentLine().appendChild(zeroWidthSpaceChar);
+        }
+
+        if (i < lines.length - 1) {
+          currentLine = null;
+        }
+      }
     }
   });
+
+  if (isUserInput) {
+    trimOldInputs();
+  }
 
   window.scrollTo(0, document.body.scrollHeight);
 }
@@ -57,7 +99,7 @@ cmdInput.addEventListener("keydown", (e) => {
     cmdInput.value = "";
     inputRow.style.display = "none";
     loadingElement.style.display = "block";
-    appendAnsiText(`> ${value}\n`);
+    appendAnsiText(`> ${value}\n`, true);
     const resolve = pendingResolve;
     pendingResolve = null;
     resolve(value);
@@ -78,6 +120,7 @@ setModuleImports('main.js', {
       loadingElement.style.display = "none";
       inputRow.style.display = "flex";
       cmdInput.focus();
+      window.scrollTo(0, document.body.scrollHeight);
     }),
     onExit: () => {
       loadingElement.style.display = "none";
