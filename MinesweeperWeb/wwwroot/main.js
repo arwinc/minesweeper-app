@@ -4,6 +4,10 @@
 import { dotnet } from './_framework/dotnet.js'
 
 const outElement = document.getElementById("out");
+const inputRow = document.getElementById("input-row");
+const cmdInput = document.getElementById("cmd");
+
+let pendingResolve = null;
 let currentColor = "";
 let isBold = false;
 
@@ -11,7 +15,7 @@ const ansiColors = {
   '30': '#000000', '31': '#f44747', '32': '#6a9955', '33': '#d7ba7d',
   '34': '#569cd6', '35': '#c586c0', '36': '#4ec9b0', '37': '#d4d4d4',
   '90': '#808080', '91': '#ff6b6b', '92': '#89d185', '93': '#ffe066',
-  '94': '#75beff', '95': '#e599f7', '96': '#66d9ef', '97': '#ffffff'
+  '94': '#75beff', '95': '#c06bd3', '96': '#66d9ef', '97': '#ffffff'
 };
 
 const appendAnsiText = (text) => {
@@ -44,6 +48,18 @@ const appendAnsiText = (text) => {
   });
 }
 
+cmdInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && pendingResolve) {
+    const value = cmdInput.value;
+    cmdInput.value = "";
+    inputRow.style.display = "none";
+    appendAnsiText(`> ${value}\n`);
+    const resolve = pendingResolve;
+    pendingResolve = null;
+    resolve(value);
+  }
+});
+
 const { setModuleImports, getAssemblyExports, getConfig, runMain } = await dotnet
   .withDiagnosticTracing(false)
   .create();
@@ -53,6 +69,11 @@ outElement.textContent = "";
 setModuleImports('main.js', {
   dom: {
     appendOutput: (text) => appendAnsiText(text),
+    readLineAsync: () => new Promise((resolve) => {
+      pendingResolve = resolve;
+      inputRow.style.display = "flex";
+      cmdInput.focus();
+    }),
   }
 });
 
