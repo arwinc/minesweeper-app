@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 
 Console.SetOut(new DomTextWriter());
 Console.WriteLine("National Geographic: \u001b[1m\u001b[34mBeyond Earth\u001b[0m");
+await Program.ReadLineAsync();
 
 partial class Program
 {
   [JSImport("dom.appendOutput", "main.js")]
   internal static partial void AppendOutput(string text);
+
+  [JSImport("dom.readLineAsync", "main.js")]
+  internal static partial Task<string?> ReadLineAsync();
 }
 
 internal class DomTextWriter : TextWriter
