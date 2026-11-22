@@ -46,6 +46,8 @@ const appendAnsiText = (text) => {
       outElement.appendChild(span);
     }
   });
+
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
 cmdInput.addEventListener("keydown", (e) => {
