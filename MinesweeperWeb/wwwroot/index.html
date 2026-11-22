@@ -9,18 +9,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preload" id="webassembly" />
   <script type="importmap"></script>
-  <script type='module' src="main#[.{fingerprint}].js"></script>
 </head>
 
 <body>
-  <h1>Stopwatch</h1>
-  <p>
-    Time elapsed in .NET is <span id="time"><i>loading...</i></span>
-  </p>
-  <p>
-    <button id="pause">Pause</button>
-    <button id="reset">Reset</button>
-  </p>
+  <pre id="out">Initializing...</pre>
+
+  <script type='module' src="main#[.{fingerprint}].js"></script>
 </body>
 
 </html>
