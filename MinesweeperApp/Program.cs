@@ -7,7 +7,7 @@ Level[] levels =
   new("Expert", 16, 16, 40),
 ];
 
-Level selectedLevel = SelectLevel();
+Level selectedLevel = await SelectLevel();
 BoardRenderer renderer = new();
 MinesweeperGame game;
 CommandParser commandParser = new();
@@ -19,7 +19,7 @@ string? input;
 do
 {
   Console.WriteLine("\nEnter command (e.g., A3 sweep, C5 marker, quit):");
-  input = Console.ReadLine();
+  input = await ConsoleReader.ReadLineAsync();
 
   if (input is null)
   {
@@ -40,7 +40,7 @@ do
   {
     renderer.Render(game.Board, true);
     Console.WriteLine("\n>>> G A M E - O V E R! <<<");
-    RestartGame();
+    await RestartGame();
   }
   else
   {
@@ -51,7 +51,7 @@ do
     if (game.IsSolved)
     {
       Console.WriteLine("\nYou have successfully completed the puzzle!");
-      RestartGame();
+      await RestartGame();
     }
   }
 }
@@ -92,17 +92,17 @@ void InitBoard()
   ));
 }
 
-void RestartGame()
+async Task RestartGame()
 {
   Console.WriteLine("Press Enter to choose a level...\n");
-  Console.ReadLine();
+  await ConsoleReader.ReadLineAsync();
 
-  selectedLevel = SelectLevel();
+  selectedLevel = await SelectLevel();
   InitBoard();
   renderer.Render(game.Board);
 }
 
-Level SelectLevel()
+async Task<Level> SelectLevel()
 {
   Console.WriteLine("Select a level:");
   Console.WriteLine("1. Beginner - 5 x 5, 5 bombs");
@@ -110,7 +110,7 @@ Level SelectLevel()
   Console.WriteLine("3. Expert - 16 x 16, 40 bombs");
   Console.Write("Choose 1, 2, or 3: ");
 
-  string? selection = Console.ReadLine();
+  string? selection = await ConsoleReader.ReadLineAsync();
   int index = selection switch
   {
     "1" => 0,
